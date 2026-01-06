@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contexte</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body{display:flex;min-height:100vh;align-items:flex-start;justify-content:center;padding:24px;background:#f3f4f6;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    .panel{width:900px;max-width:100%;background:#fff;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.08);padding:20px}
+    .panel h1{margin:0 0 12px;font-size:22px}
+    .back{display:inline-block;margin-bottom:12px;color:#0366d6;text-decoration:none}
+    /* toast */
+    #toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#111827;color:#fff;padding:12px 18px;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.18);opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s ease}
+    #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    /* validated label (inactive and active 'feu vert' styles) */
+    #validated-label{
+      border:1px solid #374151;
+      color:#9ca3af;
+      background:#fff;
+      padding:10px 20px;
+      border-radius:14px;
+      font-weight:700;
+      font-size:18px;
+      transition:background .18s ease,color .18s ease,box-shadow .18s ease,transform .12s ease;
+      display:inline-block;
+    }
+    /* active green state (feu vert) */
+    #validated-label.on{
+      background:linear-gradient(180deg,#10b981 0%,#0ea06f 100%);
+      color:#ffffff;
+      border-color:#10b981;
+      box-shadow:0 8px 24px rgba(16,185,129,0.16), inset 0 1px 0 rgba(255,255,255,0.06);
+      transform:translateY(-1px);
+    }
+    /* small pop animation when turning green */
+    @keyframes validated-pop {
+      0% { transform: scale(0.96) translateY(0); box-shadow:0 4px 12px rgba(16,185,129,0.08); }
+      40% { transform: scale(1.03) translateY(-2px); box-shadow:0 10px 28px rgba(16,185,129,0.18); }
+      100% { transform: scale(1) translateY(-1px); box-shadow:0 8px 24px rgba(16,185,129,0.16); }
+    }
+    #validated-label.on.animate{ animation: validated-pop .42s cubic-bezier(.2,.9,.2,1); }
+    /* setup validated label shares same styles as validated-label */
+    #validated-setup-label{ border:1px solid #374151; color:#9ca3af; background:#fff; padding:10px 20px; border-radius:14px; font-weight:700; font-size:18px; transition:background .18s ease,color .18s ease,box-shadow .18s ease,transform .12s ease; display:inline-block; }
+    #validated-setup-label.on{ background:linear-gradient(180deg,#10b981 0%,#0ea06f 100%); color:#ffffff; border-color:#10b981; box-shadow:0 8px 24px rgba(16,185,129,0.16), inset 0 1px 0 rgba(255,255,255,0.06); transform:translateY(-1px); }
+    #validated-setup-label.on.animate{ animation: validated-pop .42s cubic-bezier(.2,.9,.2,1); }
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <a class="back" href="01-index.html">← Retour aux contextes</a>
+    <h1 id="context-title">Contexte</h1>
+  
+    
+
+  <script>
+    function getQueryParam(name){
+      const params = new URLSearchParams(window.location.search);
+      return params.get(name);
+    }
+    const ctx = getQueryParam('context');
+    const el = document.getElementById('context-title');
+    if(el){ el.textContent = ctx ? ctx : 'Contexte non spécifié'; }
+  </script>
+    
+        <section id="confirmations" style="margin-top:20px">
+          <h2 style="margin:0 0 10px;font-size:18px;border-top:1px solid #e5e7eb;padding-top:12px">Confirmations de contextes</h2>
+          <form id="new-confirmation-form" class="add-confirmation" style="display:flex;gap:12px;margin-top:8px;align-items:center">
+            <input id="new-confirmation-input" type="text" placeholder="Ajouter confirmation personelle" aria-label="Ajouter confirmation personelle" style="flex:1;padding:14px;border:1px solid #d1d5db;border-radius:8px;font-size:16px" />
+            <button id="add-confirmation-btn" type="submit" style="padding:10px 16px;border-radius:10px;border:1px solid #0f172a;background:#fff;font-weight:600">Ajouter</button>
+          </form>
+          <div id="confirmations-list" style="display:flex;flex-direction:column;gap:12px;padding:12px;background:#f8fafc;border-radius:6px;border:1px solid #e6eef6;margin-top:8px">
+            <!-- items appended here -->
+          </div>
+        </section>
+
+        <div id="confirm-footer" style="display:flex;align-items:center;gap:12px;margin-top:14px">
+          <!-- Replaced the button with a non-interactive label that changes style when validated -->
+          <div id="validated-label" aria-hidden="true" style="margin-left:auto;padding:10px 20px">contexte validé</div>
+        </div>
+
+        <section id="setup-section" style="display:none;margin-top:18px">
+          <h2 style="margin:0 0 10px;font-size:18px;border-top:1px solid #e5e7eb;padding-top:12px">Confirmations de setup</h2>
+          <form id="new-setup-confirmation-form" class="add-setup-confirmation" style="display:flex;gap:12px;margin-top:8px;align-items:center">
+            <input id="new-setup-confirmation-input" type="text" placeholder="Ajouter confirmation personelle" aria-label="Ajouter confirmation personelle" style="flex:1;padding:14px;border:1px solid #d1d5db;border-radius:8px;font-size:16px" />
+            <button id="add-setup-confirmation-btn" type="submit" style="padding:10px 16px;border-radius:10px;border:1px solid #0f172a;background:#fff;font-weight:600">Ajouter</button>
+          </form>
+          <div id="setup-list" style="display:flex;flex-direction:column;gap:12px;padding:12px;background:#fff;border-radius:6px;border:1px solid #e6eef6;margin-top:8px">
+            <div style="color:#6b7280">Aucune confirmation de setup pour le moment.</div>
+          </div>
+          <div style="display:flex;align-items:center;margin-top:12px">
+            <div style="flex:1"></div>
+            <div id="validated-setup-label" aria-hidden="true">analyse validée</div>
+          </div>
+        </section>
+
+  <script>
+    // Confirmations CRUD for the selected context
+    (function(){
+      const STORAGE_KEY = 'todo-list-v1';
+      const SETUP_KEY = 'todo-list-setup-v1';
+      const contextName = (new URLSearchParams(window.location.search)).get('context') || null;
+  const form = document.getElementById('new-confirmation-form');
+  const input = document.getElementById('new-confirmation-input');
+  const listEl = document.getElementById('confirmations-list');
+  const metaKey = 'todo-list-validated-v1';
+  // read existing validation metadata for this context (used only to avoid re-persisting/toasting)
+  let persistedMeta = false;
+  try{ const _m = JSON.parse(localStorage.getItem(metaKey)) || {}; persistedMeta = !!_m[contextName]; }catch(e){ persistedMeta = false; }
+  // track last visual state so we only animate/toast on transitions
+  let lastVisualState = false;
+
+      if(!contextName){
+        listEl.innerHTML = '<div style="color:#9ca3af">Aucun contexte sélectionné.</div>';
+        if(form) form.style.display = 'none';
+        return;
+      }
+
+      function loadAll(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }catch(e){ return {}; } }
+      function saveAll(data){ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+      function getList(){ const data = loadAll(); return data[contextName] || []; }
+      function setList(arr){ const data = loadAll(); data[contextName] = arr; saveAll(data); }
+
+      function render(){
+        const items = getList();
+        listEl.innerHTML = '';
+        if(items.length === 0){ listEl.innerHTML = '<div style="color:#6b7280">Aucune confirmation pour ce contexte.</div>'; return; }
+
+  items.forEach(item => {
+          const label = document.createElement('label');
+          label.className = 'confirmation-item';
+          label.style.display = 'flex';
+          label.style.alignItems = 'center';
+          label.style.gap = '12px';
+          label.style.padding = '10px';
+          label.style.background = '#fff';
+          label.style.borderRadius = '8px';
+          label.style.border = '1px solid #e6eef6';
+
+          const chk = document.createElement('input');
+          chk.type = 'checkbox'; chk.className = 'confirmation-checkbox'; chk.checked = !!item.completed; chk.dataset.id = item.id;
+          chk.style.width = '20px'; chk.style.height = '20px';
+          chk.addEventListener('change', () => { toggleCompleted(item.id); });
+
+          const spanText = document.createElement('span');
+          spanText.className = 'label-text'; spanText.textContent = item.text;
+          spanText.style.fontSize = '18px'; spanText.style.flex = '1'; spanText.style.marginLeft = '8px';
+          if(item.completed){ spanText.style.color = '#6b7280'; spanText.style.textDecoration = 'line-through'; }
+
+          const actions = document.createElement('div'); actions.className = 'context-actions'; actions.style.display = 'flex'; actions.style.gap = '8px'; actions.style.marginLeft = 'auto';
+
+          const editBtn = document.createElement('button'); editBtn.type = 'button'; editBtn.className = 'confirmation-edit'; editBtn.setAttribute('aria-label','Modifier'); editBtn.style.border='none'; editBtn.style.background='transparent'; editBtn.style.cursor='pointer';
+          editBtn.innerHTML = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="18" height="18" aria-hidden="true"><path d="M3 21v-3.75L14.06 6.19l3.75 3.75L6.75 21H3z" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round" fill="none" stroke="#0f172a"/><path d="M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round" fill="none" stroke="#0f172a"/></svg>';
+
+          const delBtn = document.createElement('button'); delBtn.type='button'; delBtn.className='confirmation-delete'; delBtn.setAttribute('aria-label','Supprimer'); delBtn.style.border='none'; delBtn.style.background='transparent'; delBtn.style.cursor='pointer';
+          delBtn.innerHTML = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="18" height="18" aria-hidden="true"><path d="M3 6h18" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke="#ef4444"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke="#ef4444"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke="#ef4444"/><path d="M10 11v6M14 11v6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke="#ef4444"/></svg>';
+
+          actions.appendChild(editBtn); actions.appendChild(delBtn);
+          label.appendChild(chk); label.appendChild(spanText); label.appendChild(actions);
+
+          // inline edit
+          const startInlineEdit = () => {
+            const oldText = item.text;
+            spanText.contentEditable = 'true'; chk.disabled = true; spanText.focus();
+            const range = document.createRange(); range.selectNodeContents(spanText); const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+            const finish = () => { spanText.contentEditable='false'; chk.disabled=false; const newText=(spanText.textContent||'').trim(); if(!newText){ spanText.textContent=oldText; return;} if(newText===oldText) return; const arr=getList(); const it=arr.find(i=>i.id===item.id); if(it){ it.text=newText; setList(arr); render(); } };
+            const onKey = (e)=>{ if(e.key==='Enter'){ e.preventDefault(); spanText.blur(); } else if(e.key==='Escape'){ spanText.textContent=oldText; spanText.blur(); } };
+            spanText.addEventListener('blur', finish); spanText.addEventListener('keydown', onKey);
+          };
+
+          editBtn.addEventListener('click',(e)=>{ e.stopPropagation(); startInlineEdit(); });
+          spanText.addEventListener('dblclick',(e)=>{ e.stopPropagation(); startInlineEdit(); });
+          delBtn.addEventListener('click',(e)=>{ e.stopPropagation(); deleteItem(item.id); });
+
+          // drag & drop
+          label.draggable = true;
+          label.addEventListener('dragstart',(e)=>{ e.dataTransfer.setData('text/plain', item.id); label.classList.add('dragging'); });
+          label.addEventListener('dragend',()=>{ label.classList.remove('dragging'); document.querySelectorAll('.confirmation-item').forEach(el=>el.classList.remove('drag-before','drag-after')); });
+          label.addEventListener('dragover',(e)=>{ e.preventDefault(); const rect=label.getBoundingClientRect(); const offset=e.clientY-rect.top; const before=offset<rect.height/2; label.classList.toggle('drag-before', before); label.classList.toggle('drag-after', !before); });
+          label.addEventListener('dragleave',()=>{ label.classList.remove('drag-before','drag-after'); });
+          label.addEventListener('drop',(e)=>{
+            e.preventDefault(); const srcId = e.dataTransfer.getData('text/plain'); if(!srcId||srcId===item.id) return; const arr=getList(); const sIdx=arr.findIndex(i=>i.id===srcId); if(sIdx>-1) arr.splice(sIdx,1); let destIdx=arr.findIndex(i=>i.id===item.id); if(destIdx===-1) destIdx=arr.length; const rect=label.getBoundingClientRect(); const before=(e.clientY-rect.top)<rect.height/2; const insertAt=before?destIdx:destIdx+1; // find dragged item from storage
+            const all = loadAll(); const dragged = (all[contextName]||[]).find(i=>i.id===srcId) || {id:srcId,text:'',completed:false}; arr.splice(insertAt,0,dragged); setList(arr); render();
+          });
+
+          listEl.appendChild(label);
+        });
+        // update counter & validate button state after rendering
+        updateCounterAndButton();
+      }
+
+      // clear persisted completed flags for this context on load
+      function clearContextCompletions(){
+        try{
+          const data = loadAll();
+          if(data && data[contextName]){
+            data[contextName] = (data[contextName]||[]).map(i=>({ id: i.id, text: i.text, completed: false }));
+            saveAll(data);
+          }
+        }catch(e){ /* ignore */ }
+      }
+
+      // clear persisted completed flags for setup confirmations on load
+      function clearSetupCompletions(){
+        try{
+          const data = loadAllSetup();
+          if(data && data[contextName]){
+            data[contextName] = (data[contextName]||[]).map(i=>({ id: i.id, text: i.text, completed: false }));
+            saveAllSetup(data);
+          }
+        }catch(e){ /* ignore */ }
+      }
+
+      function addItem(text){ const items = getList(); const newItem = { id: Date.now().toString(), text: text.trim(), completed: false }; items.push(newItem); setList(items); render(); }
+      function toggleCompleted(id){ const items = getList(); const idx = items.findIndex(i=>i.id===id); if(idx===-1) return; items[idx].completed = !items[idx].completed; setList(items); render(); }
+      function deleteItem(id){ let items = getList(); items = items.filter(i=>i.id!==id); setList(items); render(); }
+
+      // --- Setup confirmations (separate list per context) ---
+      const setupListEl = document.getElementById('setup-list');
+      const setupForm = document.getElementById('new-setup-confirmation-form');
+      const setupInput = document.getElementById('new-setup-confirmation-input');
+      const validatedSetupLabel = document.getElementById('validated-setup-label');
+      let lastSetupVisualState = false;
+
+      function loadAllSetup(){ try{ return JSON.parse(localStorage.getItem(SETUP_KEY)) || {}; }catch(e){ return {}; } }
+      function saveAllSetup(data){ localStorage.setItem(SETUP_KEY, JSON.stringify(data)); }
+      function getSetupList(){ const data = loadAllSetup(); return data[contextName] || []; }
+      function setSetupList(arr){ const data = loadAllSetup(); data[contextName] = arr; saveAllSetup(data); }
+
+      function renderSetup(){ const items = getSetupList(); if(!setupListEl) return; setupListEl.innerHTML = ''; if(items.length===0){ setupListEl.innerHTML = '<div style="color:#6b7280">Aucune confirmation de setup pour le moment.</div>'; return; }
+        items.forEach(item=>{
+          const label = document.createElement('label');
+          label.className = 'setup-item';
+          label.style.display='flex'; label.style.alignItems='center'; label.style.gap='12px'; label.style.padding='10px'; label.style.background='#fff'; label.style.borderRadius='8px'; label.style.border='1px solid #e6eef6';
+
+          const chk = document.createElement('input'); chk.type='checkbox'; chk.className='setup-checkbox'; chk.checked=!!item.completed; chk.dataset.id=item.id; chk.style.width='20px'; chk.style.height='20px'; chk.addEventListener('change',()=>{ toggleSetupCompleted(item.id); });
+
+          const spanText = document.createElement('span'); spanText.className='label-text'; spanText.textContent = item.text; spanText.style.fontSize='16px'; spanText.style.flex='1';
+          if(item.completed){ spanText.style.color='#6b7280'; spanText.style.textDecoration='line-through'; }
+
+          const actions = document.createElement('div'); actions.className='setup-actions'; actions.style.display='flex'; actions.style.gap='8px'; actions.style.marginLeft='auto';
+
+          const editBtn = document.createElement('button'); editBtn.type='button'; editBtn.className='setup-edit'; editBtn.setAttribute('aria-label','Modifier'); editBtn.style.border='none'; editBtn.style.background='transparent'; editBtn.style.cursor='pointer';
+          editBtn.innerHTML = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="18" height="18" aria-hidden="true"><path d="M3 21v-3.75L14.06 6.19l3.75 3.75L6.75 21H3z" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round" fill="none" stroke="#0f172a"/><path d="M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round" fill="none" stroke="#0f172a"/></svg>';
+
+          const delBtn = document.createElement('button'); delBtn.type='button'; delBtn.className='setup-delete'; delBtn.setAttribute('aria-label','Supprimer'); delBtn.style.border='none'; delBtn.style.background='transparent'; delBtn.style.cursor='pointer';
+          delBtn.innerHTML = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="18" height="18" aria-hidden="true"><path d="M3 6h18" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke="#ef4444"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke="#ef4444"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke="#ef4444"/><path d="M10 11v6M14 11v6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke="#ef4444"/></svg>';
+
+          actions.appendChild(editBtn); actions.appendChild(delBtn);
+          label.appendChild(chk); label.appendChild(spanText); label.appendChild(actions);
+
+          // inline edit for setup items
+          const startInlineEditSetup = () => {
+            const oldText = item.text;
+            spanText.contentEditable = 'true'; chk.disabled = true; spanText.focus();
+            const range = document.createRange(); range.selectNodeContents(spanText); const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+            const finish = () => { spanText.contentEditable='false'; chk.disabled=false; const newText=(spanText.textContent||'').trim(); if(!newText){ spanText.textContent=oldText; return;} if(newText===oldText) return; const arr=getSetupList(); const it=arr.find(i=>i.id===item.id); if(it){ it.text=newText; setSetupList(arr); renderSetup(); } };
+            const onKey = (e)=>{ if(e.key==='Enter'){ e.preventDefault(); spanText.blur(); } else if(e.key==='Escape'){ spanText.textContent=oldText; spanText.blur(); } };
+            spanText.addEventListener('blur', finish);
+            spanText.addEventListener('keydown', onKey);
+          };
+
+          editBtn.addEventListener('click',(e)=>{ e.stopPropagation(); startInlineEditSetup(); });
+          spanText.addEventListener('dblclick',(e)=>{ e.stopPropagation(); startInlineEditSetup(); });
+          delBtn.addEventListener('click',(e)=>{ e.stopPropagation(); deleteSetupItem(item.id); });
+
+          setupListEl.appendChild(label);
+        });
+        // sync validation state after rendering
+        try{ updateSetupValidation(); }catch(e){}
+      }
+
+      function updateSetupValidation(){
+        const items = getSetupList(); const done = items.filter(i=>i.completed).length;
+        // turn on when at least 2 setup confirmations are checked
+        const meets = done >= 2;
+        if(validatedSetupLabel){
+          if(meets){
+            validatedSetupLabel.classList.add('on');
+            validatedSetupLabel.setAttribute('aria-checked','true');
+            if(!lastSetupVisualState){
+              validatedSetupLabel.classList.add('animate');
+              setTimeout(()=> validatedSetupLabel.classList.remove('animate'), 600);
+              // toast removed per user request
+              // persist minimal metadata for setup
+              try{
+                const meta = JSON.parse(localStorage.getItem(metaKey)) || {};
+                meta[contextName + '::setup'] = { validatedAt: new Date().toISOString(), count: done };
+                localStorage.setItem(metaKey, JSON.stringify(meta));
+              }catch(e){}
+            }
+            lastSetupVisualState = true;
+          } else {
+            validatedSetupLabel.classList.remove('on');
+            validatedSetupLabel.removeAttribute('aria-checked');
+            lastSetupVisualState = false;
+          }
+        }
+      }
+
+      function addSetupItem(text){ const items = getSetupList(); const newItem = { id: Date.now().toString(), text: text.trim(), completed:false }; items.push(newItem); setSetupList(items); renderSetup(); updateSetupValidation(); }
+      function toggleSetupCompleted(id){ const items = getSetupList(); const idx = items.findIndex(i=>i.id===id); if(idx===-1) return; items[idx].completed = !items[idx].completed; setSetupList(items); renderSetup(); updateSetupValidation(); }
+      function deleteSetupItem(id){ let items = getSetupList(); items = items.filter(i=>i.id!==id); setSetupList(items); renderSetup(); updateSetupValidation(); }
+
+      if(setupForm){ setupForm.addEventListener('submit',(e)=>{ e.preventDefault(); const v=(setupInput.value||'').trim(); if(!v) return; addSetupItem(v); setupInput.value=''; }); }
+
+
+      // counter and validate button
+      const counterEl = document.getElementById('counter');
+      const validatedLabel = document.getElementById('validated-label');
+      const setupSection = document.getElementById('setup-section');
+      // update counter text and toggle the validated label state (visual depends on ALL items being checked)
+      function updateCounterAndButton(){
+        const items = getList();
+        const done = items.filter(i=>i.completed).length;
+        if(counterEl) counterEl.textContent = `${done} confirmée${done>1?'s':''}`;
+        if(validatedLabel){
+          // Visual: turn green only when ALL confirmations are checked; revert otherwise.
+          const total = items.length;
+          const allChecked = total > 0 && done === total;
+          if(allChecked){
+            validatedLabel.classList.add('on');
+            validatedLabel.setAttribute('aria-checked','true');
+            // animate + toast when transitioning from not-validated to validated
+              if(!lastVisualState){
+              // add a temporary animate class
+              validatedLabel.classList.add('animate');
+              setTimeout(()=> validatedLabel.classList.remove('animate'), 600);
+              // persist metadata once when crossing the threshold for the first time
+              if(!persistedMeta){
+                persistedMeta = true;
+                try{
+                  const meta = JSON.parse(localStorage.getItem(metaKey)) || {};
+                  meta[contextName] = { validatedAt: new Date().toISOString(), count: done, total };
+                  localStorage.setItem(metaKey, JSON.stringify(meta));
+                }catch(e){ /* ignore storage errors */ }
+              }
+              // toast removed per user request
+            }
+            lastVisualState = true;
+            // show the setup confirmations section when analysis becomes validated
+            if(setupSection) setupSection.style.display = 'block';
+          } else {
+            validatedLabel.classList.remove('on');
+            validatedLabel.removeAttribute('aria-checked');
+            lastVisualState = false;
+            if(setupSection) setupSection.style.display = 'none';
+          }
+        }
+      }
+
+      // toast helper (lookup element lazily in case it's after the script)
+      function showToast(msg, duration = 2500){
+        const el = document.getElementById('toast');
+        if(!el){ window.alert(msg); return; }
+        el.textContent = msg;
+        el.classList.add('show');
+        clearTimeout(el._timeout);
+        el._timeout = setTimeout(()=>{ el.classList.remove('show'); }, duration);
+      }
+
+      // No click handler: validation is automatic when >=2 confirmations are checked.
+
+      // wire form
+      if(form){ form.addEventListener('submit',(e)=>{ e.preventDefault(); const v=(input.value||'').trim(); if(!v) return; addItem(v); input.value=''; }); }
+
+      // initial render (clear persisted completion flags first so nothing stays checked when returning)
+      clearContextCompletions();
+      render();
+      // clear persisted completion flags for setup too, then render/setup validation
+      clearSetupCompletions();
+      renderSetup();
+      updateSetupValidation();
+    })();
+  </script>
+  </div>
+  <div id="toast" aria-live="polite" role="status"></div>
+</body>
+</html>
